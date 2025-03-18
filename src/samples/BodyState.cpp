@@ -11,9 +11,9 @@ BodyState::BodyState(bool doInvalidation)
         invalidate();
 }
 
-void BodyState::setPose(const Affine3d& pose)
+void BodyState::setPose(const Affine3d& _pose)
 {
-    this->pose.setTransform(pose);
+    this->pose.setTransform(_pose);
 }
 
 const Affine3d BodyState::getPose() const
@@ -210,16 +210,16 @@ void BodyState::invalidateVelocityCovariance()
     this->velocity.invalidateCovariance();
 }
 
-void BodyState::invalidateValues(bool pose, bool velocity)
+void BodyState::invalidateValues(bool _pose, bool _velocity)
 {
-    if (pose) this->invalidatePose();
-    if (velocity) this->invalidateVelocity();
+    if (_pose) this->invalidatePose();
+    if (_velocity) this->invalidateVelocity();
 }
 
-void BodyState::invalidateCovariances(bool pose, bool velocity)
+void BodyState::invalidateCovariances(bool _pose, bool _velocity)
 {
-    if (pose) this->invalidatePoseCovariance();
-    if (velocity) this->invalidateVelocityCovariance();
+    if (_pose) this->invalidatePoseCovariance();
+    if (_velocity) this->invalidateVelocityCovariance();
 }
 
 BodyState& BodyState::operator=(const RigidBodyState& rbs)

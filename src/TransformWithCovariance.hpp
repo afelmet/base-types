@@ -50,20 +50,20 @@ namespace base {
             this->invalidateCovariance();
         }
 
-        TransformWithCovariance( const base::Affine3d& trans, const Covariance& cov )
+        TransformWithCovariance( const base::Affine3d& trans, const Covariance& _cov )
         {
             this->setTransform(trans);
-            this->cov = cov;
+            this->cov = _cov;
         }
 
-        TransformWithCovariance(const base::Position& translation, const base::Quaterniond& orientation)
-            : translation(translation), orientation(orientation)
+        TransformWithCovariance(const base::Position& _translation, const base::Quaterniond& _orientation)
+            : translation(_translation), orientation(_orientation)
         {
             this->invalidateCovariance();
         }
 
-        TransformWithCovariance(const base::Position& translation, const base::Quaterniond& orientation, const Covariance& cov )
-            : translation(translation), orientation(orientation), cov(cov)
+        TransformWithCovariance(const base::Position& _translation, const base::Quaterniond& _orientation, const Covariance& _cov )
+            : translation(_translation), orientation(_orientation), cov(_cov)
         {
 
         }
@@ -102,7 +102,7 @@ namespace base {
         /** performs a composition of this transform with a given point with covariance.
          */
         std::pair<Eigen::Vector3d, Eigen::Matrix3d>
-        composePointWithCovariance( const Eigen::Vector3d& point, const Eigen::Matrix3d& cov ) const;
+        composePointWithCovariance( const Eigen::Vector3d& point, const Eigen::Matrix3d& _cov ) const;
 	
         TransformWithCovariance inverse() const;
 
@@ -111,9 +111,9 @@ namespace base {
             return this->cov;
         }
 
-        void setCovariance( const Covariance& cov )
+        void setCovariance( const Covariance& _cov )
         {
-            this->cov = cov;
+            this->cov = _cov;
         }
 
         const base::Matrix3d getTranslationCov() const
@@ -121,9 +121,9 @@ namespace base {
             return this->cov.topLeftCorner<3,3>();
         }
         
-        void setTranslationCov(const base::Matrix3d& cov)
+        void setTranslationCov(const base::Matrix3d& _cov)
         {
-            this->cov.topLeftCorner<3,3>() = cov;
+            this->cov.topLeftCorner<3,3>() = _cov;
         }
 
         const base::Matrix3d getOrientationCov() const
@@ -131,9 +131,9 @@ namespace base {
             return this->cov.bottomRightCorner<3,3>();
         }
         
-        void setOrientationCov(const base::Matrix3d& cov)
+        void setOrientationCov(const base::Matrix3d& _cov)
         {
-            this->cov.bottomRightCorner<3,3>() = cov;
+            this->cov.bottomRightCorner<3,3>() = _cov;
         }
 
         const base::Affine3d getTransform() const

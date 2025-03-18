@@ -11,7 +11,7 @@ struct Twist
     /** Initialize all members with NaN */
     Twist();
     /** Initialize with the given values*/
-    Twist(base::Vector3d linear, base::Vector3d angular);
+    Twist(base::Vector3d _linear, base::Vector3d _angular);
 
     /** Set all members to NaN*/
     void setNaN();

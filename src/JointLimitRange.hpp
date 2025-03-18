@@ -13,19 +13,22 @@ struct JointLimitRange
 
     struct OutOfBounds : public std::runtime_error
     {
-	static std::string errorString( std::string name, double min, double max, double value );
-	
-	std::string name;
-	double min, max, value;
-        OutOfBounds()
-            : std::runtime_error( std::string() ), min(0), max(0), value(0) {}
-	OutOfBounds( std::string name, double min, double max, double value )
-	    : std::runtime_error( errorString( name, min, max, value ) )
-            , name( name )
-            , min( min ), max( max ), value( value )
-	{
-	}
-	~OutOfBounds() throw() {}
+        static std::string errorString(std::string _name, double _min, double _max, double _value);
+
+        std::string name;
+        double min, max, value;
+
+        OutOfBounds() : std::runtime_error( std::string() ), min(0), max(0), value(0) {}
+
+        OutOfBounds(std::string _name, double _min, double _max, double _value)
+          : std::runtime_error(errorString(_name, _min, _max, _value)),
+            name(_name),
+            min(_min),
+            max(_max),
+            value(_value)
+        {}
+
+        ~OutOfBounds() throw() {}
     };
 
     /** 

@@ -11,7 +11,7 @@ struct Acceleration
     /** Initialize all members with NaN */
     Acceleration();
     /** Initialize with the given values*/
-    Acceleration(base::Vector3d linear, base::Vector3d angular);
+    Acceleration(base::Vector3d _linear, base::Vector3d _angular);
 
     /** Set all members to NaN*/
     void setNaN();

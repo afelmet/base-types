@@ -138,35 +138,35 @@ public:
         , bin_count(0)
         , beam_count(0) {}
 
-    Sonar(base::Time time, base::Time bin_duration, int bin_count, base::Angle beam_width, base::Angle beam_height)
-        : time(time)
-        , bin_duration(bin_duration)
-        , beam_width(beam_width)
-        , beam_height(beam_height)
+    Sonar(base::Time _time, base::Time _bin_duration, uint32_t _bin_count, base::Angle _beam_width, base::Angle _beam_height)
+        : time(_time)
+        , bin_duration(_bin_duration)
+        , beam_width(_beam_width)
+        , beam_height(_beam_height)
         , speed_of_sound(getSpeedOfSoundInWater())
-        , bin_count(bin_count)
+        , bin_count(_bin_count)
         , beam_count(0)
     {
     }
 
-    Sonar(base::Time time, base::Time bin_duration, int bin_count, base::Angle beam_width, base::Angle beam_height,
-            int beam_count, bool per_beam_timestamps)
-        : time(time)
-        , bin_duration(bin_duration)
-        , beam_width(beam_width)
-        , beam_height(beam_height)
+    Sonar(base::Time _time, base::Time _bin_duration, uint32_t _bin_count, base::Angle _beam_width, base::Angle _beam_height,
+            uint32_t _beam_count, bool per_beam_timestamps)
+        : time(_time)
+        , bin_duration(_bin_duration)
+        , beam_width(base::Angle::fromRad(_beam_width.getRad()))
+        , beam_height(base::Angle::fromRad(_beam_height.getRad()))
         , speed_of_sound(getSpeedOfSoundInWater())
-        , bin_count(bin_count)
-        , beam_count(beam_count)
+        , bin_count(_bin_count)
+        , beam_count(_beam_count)
     {
-        resize(bin_count, beam_count, per_beam_timestamps);
+        resize(_bin_count, _beam_count, per_beam_timestamps);
     }
 
-    void resize(int bin_count, int beam_count, bool per_beam_timestamps);
+    void resize(uint32_t _bin_count, uint32_t _beam_count, bool per_beam_timestamps);
 
     /** Initializes a Sonar structure to represent a single beam
      */
-    static Sonar fromSingleBeam(base::Time time, base::Time bin_duration, base::Angle beam_width, base::Angle beam_height,
+    static Sonar fromSingleBeam(base::Time _time, base::Time _bin_duration, base::Angle _beam_width, base::Angle _beam_height,
             std::vector<float> const& bins, base::Angle bearing = base::Angle(),
             float speed_of_sound = getSpeedOfSoundInWater());
 

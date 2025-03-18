@@ -17,7 +17,7 @@ public:
      * Initializes and starts a timeout
      * @param timeout, if zero is given the timeout is inactive 
      */
-    Timeout(base::Time timeout = base::Time::fromSeconds(0));
+    Timeout(base::Time _timeout = base::Time::fromSeconds(0));
 
     /**
      * Restarts the timeout
@@ -37,7 +37,7 @@ public:
      * @param timeout  a custom timeout
      * @returns  true if the timeout is elapsed
      */
-    bool elapsed(const base::Time &timeout) const;
+    bool elapsed(const base::Time &_timeout) const;
 
     /**
      * Calculates the time left for this timeout
@@ -52,7 +52,7 @@ public:
      * @param timeout  a custom timeout
      * @returns  number of milliseconds this timeout as left
      */
-    base::Time timeLeft(const base::Time &timeout) const;
+    base::Time timeLeft(const base::Time &_timeout) const;
 
 };
 

@@ -13,7 +13,7 @@ namespace base {
         /** Initialize all members with NaN */
         Wrench();
         /** Initialize with the given values*/
-        Wrench(base::Vector3d linear, base::Vector3d angular);
+        Wrench(base::Vector3d _linear, base::Vector3d _angular);
 
         /** Set all members to NaN*/
         void setNaN();

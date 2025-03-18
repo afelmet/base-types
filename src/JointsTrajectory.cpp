@@ -18,7 +18,7 @@ bool JointsTrajectory::isValid() const
     return true;
 }
 
-void JointsTrajectory::resize(int num_joints, int num_samples)
+void JointsTrajectory::resize(long unsigned int num_joints, long unsigned int num_samples)
 {
     this->resize(num_joints);
     for(size_t i=0; i<elements.size(); i++){
@@ -26,7 +26,7 @@ void JointsTrajectory::resize(int num_joints, int num_samples)
     }
 }
 
-void JointsTrajectory::resize(int num_joints)
+void JointsTrajectory::resize(long unsigned int num_joints)
 {
     elements.resize(num_joints);
     names.resize(num_joints);

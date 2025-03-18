@@ -15,13 +15,13 @@ namespace base
 
             Temperature() : base::Temperature() { }
 
-            Temperature(base::Time const& time, base::Temperature temp)
+            Temperature(base::Time const& _time, base::Temperature temp)
                 : base::Temperature(temp.getKelvin())
-                , time(time) { }
+                , time(_time) { }
 
-            static Temperature fromKelvin(base::Time const& time, double kelvin);
+            static Temperature fromKelvin(base::Time const& _time, double kelvin);
 
-            static Temperature fromCelsius(base::Time const& time, double celsius);
+            static Temperature fromCelsius(base::Time const& _time, double celsius);
 
         };
     }

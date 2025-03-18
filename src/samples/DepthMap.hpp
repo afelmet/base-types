@@ -582,7 +582,7 @@ protected:
 	    for(unsigned i = 0; i < angles.size(); i++)
 		rotations[i] = Eigen::AngleAxis<T>(angles[i].getRad(), Eigen::Matrix<T,3,1>::Unit(axis));
 	}
-    };
+    }
     
     /** Computes the resolution in a given interval. */
     double computeResolution(const std::vector<double> &interval, uint32_t elements, PROJECTION_TYPE projection) const
@@ -598,10 +598,10 @@ protected:
 	}
 	else if(projection == POLAR)
 	{
-	    if(interval.back() == interval.front())
-		step_resolution = (2.0 * M_PI) / (double)(elements-1);
+	    if(fabs(interval.back() - interval.front()) < 1e-5)
+		      step_resolution = (2.0 * M_PI) / (double)(elements-1);
 	    else
-                step_resolution = (interval.back() - interval.front()) / (double)(elements-1);
+          step_resolution = (interval.back() - interval.front()) / (double)(elements-1);
 	}
 	else
 	    throw std::invalid_argument("Invalid argument for projection type.");

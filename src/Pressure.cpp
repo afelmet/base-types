@@ -23,7 +23,7 @@ Pressure Pressure::fromBar(float bar)
 
 Pressure Pressure::fromPSI(float psi)
 {
-    return fromPascal(psi * 6894.75729);
+    return fromPascal(psi * 6894.75729f);
 }
 
 float Pressure::toPa() const
@@ -38,7 +38,7 @@ float Pressure::toBar() const
 
 float Pressure::toPSI() const
 {
-    return pascal / 6894.75729;
+    return pascal / 6894.75729f;
 }
 
 } //end namespace base

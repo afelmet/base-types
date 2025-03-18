@@ -33,6 +33,8 @@ public:
      */
     Angle() : rad(base::unknown<double>()) {}
 
+    Angle(const Angle& other) : rad(other.rad) {}
+
 protected:
     explicit Angle( double _rad ) : rad(_rad)
     {
@@ -101,9 +103,11 @@ public:
      */
     static inline Angle unknown()
     {
-        Angle result;
-        result.rad = base::unknown<double>();
-        return result;
+        /* Angle result;
+         * result.rad = base::unknown<double>();
+         * return result;
+         */
+        return fromRad(base::unknown<double>());
     }
 
     /** Returns the minimum angle possible after normalization
@@ -163,7 +167,7 @@ public:
 
     inline bool operator==(const Angle &other ) const
     {
-        return this->rad == other.rad;
+        return fabs(this->rad - other.rad) < 1e-5;
     }
 
     inline bool operator<(const Angle &other ) const
@@ -221,11 +225,11 @@ public:
     }
 
     /**
-     * Returns a new angle which is the inverse of tis object.
+     * Returns a new angle which is the inverse of this object.
      * */
     inline Angle flipped() const
     {
-        return Angle(rad).flip();
+        return fromRad(rad < 0 ? rad + M_PI : rad - M_PI);
     }
 
     /**
@@ -287,12 +291,14 @@ public:
      * */
     bool isInside(const AngleSegment &segment) const;
 
-    bool split(const Angle &angle, AngleSegment &rest)
+    // NOTE: Parameters are not used, but needed for distinguishing overloaded functions.
+    bool split(const Angle &angle __attribute__((unused)), AngleSegment &rest __attribute__((unused)))
     {
         return false;
     }
 
-    std::vector<AngleSegment> split(const Angle &angle)
+    // NOTE: Parameters are not used, but needed for distinguishing overloaded functions.
+    std::vector<AngleSegment> split(const Angle &angle __attribute__((unused)))
     {
         return std::vector<AngleSegment>();
     }

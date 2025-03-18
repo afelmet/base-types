@@ -11,22 +11,22 @@ namespace base {
 
 typedef TwistWithCovariance::Covariance Covariance;
 
-TwistWithCovariance::TwistWithCovariance(const Vector3d& vel, const Vector3d& rot)
-    : vel(vel), rot(rot)
+TwistWithCovariance::TwistWithCovariance(const Vector3d& _vel, const Vector3d& _rot)
+    : vel(_vel), rot(_rot)
 {
     this->invalidateCovariance();
 }
 
-TwistWithCovariance::TwistWithCovariance(const Vector3d& vel, const Vector3d& rot, const TwistWithCovariance::Covariance& cov)
-    : vel(vel), rot(rot), cov(cov)
+TwistWithCovariance::TwistWithCovariance(const Vector3d& _vel, const Vector3d& _rot, const TwistWithCovariance::Covariance& _cov)
+    : vel(_vel), rot(_rot), cov(_cov)
 {
 
 }
 
-TwistWithCovariance::TwistWithCovariance(const Vector6d& velocity, const TwistWithCovariance::Covariance& cov)
+TwistWithCovariance::TwistWithCovariance(const Vector6d& velocity, const TwistWithCovariance::Covariance& _cov)
 {
     this->setVelocity(velocity);
-    this->cov = cov;
+    this->cov = _cov;
 }
 
 const Vector3d& TwistWithCovariance::getTranslation() const
@@ -34,9 +34,9 @@ const Vector3d& TwistWithCovariance::getTranslation() const
     return this->vel;
 }
 
-void TwistWithCovariance::setTranslation(const Vector3d& vel)
+void TwistWithCovariance::setTranslation(const Vector3d& _vel)
 {
-    this->vel = vel;
+    this->vel = _vel;
 }
 
 const Vector3d& TwistWithCovariance::getRotation() const
@@ -44,9 +44,9 @@ const Vector3d& TwistWithCovariance::getRotation() const
     return this->rot;
 }
 
-void TwistWithCovariance::setRotation(const Vector3d& rot)
+void TwistWithCovariance::setRotation(const Vector3d& _rot)
 {
-    this->rot = rot;
+    this->rot = _rot;
 }
 
 const TwistWithCovariance::Covariance& TwistWithCovariance::getCovariance() const
@@ -54,9 +54,9 @@ const TwistWithCovariance::Covariance& TwistWithCovariance::getCovariance() cons
     return this->cov;
 }
 
-void TwistWithCovariance::setCovariance(const TwistWithCovariance::Covariance& cov)
+void TwistWithCovariance::setCovariance(const TwistWithCovariance::Covariance& _cov)
 {
-    this->cov = cov;
+    this->cov = _cov;
 }
 
 const Matrix3d TwistWithCovariance::getLinearVelocityCov() const
@@ -64,9 +64,9 @@ const Matrix3d TwistWithCovariance::getLinearVelocityCov() const
     return this->cov.block<3,3>(0,0);
 }
 
-void TwistWithCovariance::setLinearVelocityCov(const Matrix3d& cov)
+void TwistWithCovariance::setLinearVelocityCov(const Matrix3d& _cov)
 {
-    this->cov.block<3,3>(0,0) = cov;
+    this->cov.block<3,3>(0,0) = _cov;
 }
 
 const Matrix3d TwistWithCovariance::getAngularVelocityCov() const
@@ -74,9 +74,9 @@ const Matrix3d TwistWithCovariance::getAngularVelocityCov() const
     return this->cov.block<3,3>(3,3);
 }
 
-void TwistWithCovariance::setAngularVelocityCov(const Matrix3d& cov)
+void TwistWithCovariance::setAngularVelocityCov(const Matrix3d& _cov)
 {
-    this->cov.block<3,3>(3,3) = cov;
+    this->cov.block<3,3>(3,3) = _cov;
 }
 
 const Vector3d& TwistWithCovariance::getLinearVelocity() const
@@ -84,9 +84,9 @@ const Vector3d& TwistWithCovariance::getLinearVelocity() const
     return this->getTranslation(); 
 }
 
-void TwistWithCovariance::setLinearVelocity(const Vector3d& vel)
+void TwistWithCovariance::setLinearVelocity(const Vector3d& _vel)
 {
-    return this->setTranslation(vel);
+    return this->setTranslation(_vel);
 }
 
 const Vector3d& TwistWithCovariance::getAngularVelocity() const
@@ -94,9 +94,9 @@ const Vector3d& TwistWithCovariance::getAngularVelocity() const
     return this->getRotation();
 }
 
-void TwistWithCovariance::setAngularVelocity(const Vector3d& rot)
+void TwistWithCovariance::setAngularVelocity(const Vector3d& _rot)
 {
-    return this->setRotation(rot);
+    return this->setRotation(_rot);
 }
 
 const Vector3d& TwistWithCovariance::translation() const
@@ -296,7 +296,7 @@ Eigen::Matrix< double, int(3), int(6) > TwistWithCovariance::crossJacobian(const
 std::ostream& operator<<(std::ostream& out, const TwistWithCovariance& twist)
 {
     /** cout the 6D twist vector (rotational first and linear second) with its associated covariance matrix **/
-    for (register unsigned short i=0; i<twist.getCovariance().rows(); ++i)
+    for (unsigned short i=0; i<twist.getCovariance().rows(); ++i)
     {
         if (i<3)
         {
@@ -306,7 +306,7 @@ std::ostream& operator<<(std::ostream& out, const TwistWithCovariance& twist)
         {
             out<<std::fixed<<std::setprecision(5)<<twist.rot[i-3]<<"\t|";
         }
-        for (register unsigned short j=0; j<twist.getCovariance().cols(); ++j)
+        for (unsigned short j=0; j<twist.getCovariance().cols(); ++j)
         {
             out<<std::fixed<<std::setprecision(5)<<twist.getCovariance().row(i)[j]<<"\t";
         }

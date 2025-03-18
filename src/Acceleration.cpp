@@ -7,9 +7,9 @@ Acceleration::Acceleration()
     setNaN();
 }
 
-Acceleration::Acceleration(base::Vector3d linear, base::Vector3d angular) :
-    linear(linear),
-    angular(angular)
+Acceleration::Acceleration(base::Vector3d _linear, base::Vector3d _angular) :
+    linear(_linear),
+    angular(_angular)
 {
 }
 

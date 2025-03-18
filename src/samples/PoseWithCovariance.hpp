@@ -40,7 +40,7 @@ public:
     PoseWithCovariance();
 
     /** Initializes type from a TransformWithCovariance */
-    explicit PoseWithCovariance(const base::TransformWithCovariance& transform);
+    explicit PoseWithCovariance(const base::TransformWithCovariance& _transform);
 
     /** Initializes type from a RigidBodyState */
     explicit PoseWithCovariance(const base::samples::RigidBodyState& rbs);
@@ -54,10 +54,10 @@ public:
     PoseWithCovariance operator*(const PoseWithCovariance& pose) const;
 
     /** Sets the transformation as TransformWithCovariance */
-    void setTransform(const base::TransformWithCovariance& transform);
+    void setTransform(const base::TransformWithCovariance& _transform);
 
     /** Sets the transformation as Eigen::Affine3d */
-    void setTransform(const Eigen::Affine3d& transform);
+    void setTransform(const Eigen::Affine3d& _transform);
 
     /** Returns transformation as TransformWithCovariance */
     const base::TransformWithCovariance& getTransformWithCovariance() const;

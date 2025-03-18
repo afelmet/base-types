@@ -30,7 +30,7 @@ public:
     Temperature();
 
 protected:
-    explicit Temperature( double kelvin );
+    explicit Temperature( double _kelvin );
 
 
 public:
@@ -39,7 +39,7 @@ public:
      * @param kelvin temperature in kelvin
      * @result temperature in celsius
      */
-    static double kelvin2Celsius( double kelvin );
+    static double kelvin2Celsius( double _kelvin );
 
     /**
      * static conversion from celsius to kelvin
@@ -54,7 +54,7 @@ public:
      * @return representation of the given temperature.
      * @param kelvin - temperature in Kelvin.
      */
-    static Temperature fromKelvin( double kelvin );
+    static Temperature fromKelvin( double _kelvin );
 
 
     /**

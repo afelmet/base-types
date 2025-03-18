@@ -4,18 +4,18 @@
 namespace base {
 namespace samples {
 
-BoundingBox::BoundingBox(const Time& time,
-                         const Vector3d& position,
-                         const Vector3d& dimension) {
-    initBoundingBox(time, position, dimension);
+BoundingBox::BoundingBox(const Time& _time,
+                         const Vector3d& _position,
+                         const Vector3d& _dimension) {
+    initBoundingBox(_time, _position, _dimension);
 }
 
-void BoundingBox::initBoundingBox(const Time& time,
-                                  const Vector3d& position,
-                                  const Vector3d& dimension) {
-    this->time = time;
-    this->position = position;
-    this->dimension = dimension;
+void BoundingBox::initBoundingBox(const Time& _time,
+                                  const Vector3d& _position,
+                                  const Vector3d& _dimension) {
+    this->time = _time;
+    this->position = _position;
+    this->dimension = _dimension;
     this->cov_position = Matrix3d::Ones() * unknown<double>();
     this->cov_dimension = Matrix3d::Ones() * unknown<double>();
 }

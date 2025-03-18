@@ -7,8 +7,8 @@ PoseWithCovariance::PoseWithCovariance()
 
 }
 
-PoseWithCovariance::PoseWithCovariance(const TransformWithCovariance& transform) :
-        transform(transform.translation, transform.orientation, transform.cov)
+PoseWithCovariance::PoseWithCovariance(const TransformWithCovariance& _transform) :
+        transform(_transform.translation, _transform.orientation, _transform.cov)
 {
 
 }
@@ -31,14 +31,14 @@ PoseWithCovariance PoseWithCovariance::operator*(const PoseWithCovariance& pose)
     return new_pose;
 }
 
-void PoseWithCovariance::setTransform(const TransformWithCovariance& transform)
+void PoseWithCovariance::setTransform(const TransformWithCovariance& _transform)
 {
-    this->transform = transform;
+    this->transform = _transform;
 }
 
-void PoseWithCovariance::setTransform(const Eigen::Affine3d& transform)
+void PoseWithCovariance::setTransform(const Eigen::Affine3d& _transform)
 {
-    this->transform.setTransform(transform);
+    this->transform.setTransform(_transform);
 }
 
 const TransformWithCovariance& PoseWithCovariance::getTransformWithCovariance() const

@@ -17,10 +17,10 @@ namespace base
 	struct InvalidName : public std::runtime_error
 	{
 	    std::string name;
-	    InvalidName(std::string const& name)
-		: std::runtime_error("trying to access element " + name + 
+	    InvalidName(std::string const& _name)
+		: std::runtime_error("trying to access element " + _name +
 			", but there is no element with that name on this structure")
-		  , name(name) {}
+		  , name(_name) {}
 
 	    ~InvalidName() throw() {}
 	};
@@ -107,8 +107,13 @@ namespace base
 	{
 	    std::vector<std::string>::const_iterator it = find(names.begin(), names.end(), name);
 	    if (it == names.end())
-		throw InvalidName(name);
-	    return it - names.begin();
+          throw InvalidName(name);
+
+      // NOTE: Should in theory not occur, unless the memory is somehow misaligned.
+      if (it - names.begin() < 0)
+          throw std::runtime_error("Invalid memory address, when mapping name to index.");
+
+	    return static_cast<size_t>(it - names.begin());
 	}
     };
 }

@@ -23,34 +23,34 @@ namespace base {
         Covariance cov;
 
     public:
-        explicit TwistWithCovariance (const base::Vector3d& vel = base::Vector3d::Zero(), const base::Vector3d& rot = base::Vector3d::Zero() );
+        explicit TwistWithCovariance (const base::Vector3d& _vel = base::Vector3d::Zero(), const base::Vector3d& _rot = base::Vector3d::Zero() );
 
-        TwistWithCovariance(const base::Vector3d& vel, const base::Vector3d& rot, const Covariance& cov);
+        TwistWithCovariance(const base::Vector3d& _vel, const base::Vector3d& _rot, const Covariance& _cov);
 
-        TwistWithCovariance(const base::Vector6d& velocity, const Covariance& cov);
+        TwistWithCovariance(const base::Vector6d& velocity, const Covariance& _cov);
 
         /** Default std::cout function **/
-        friend std::ostream & operator<<(std::ostream &out, const base::Vector6d& vel);
+        friend std::ostream & operator<<(std::ostream &out, const base::Vector6d& _vel);
 
         /** Get and Set Methods **/
         const base::Vector3d& getTranslation() const;
-        void setTranslation(const base::Vector3d& vel);
+        void setTranslation(const base::Vector3d& _vel);
 
         const base::Vector3d& getRotation() const;
-        void setRotation(const base::Vector3d& rot);
+        void setRotation(const base::Vector3d& _rot);
 
         const Covariance& getCovariance() const;
-        void setCovariance(const Covariance& cov);
+        void setCovariance(const Covariance& _cov);
 
         const base::Matrix3d getLinearVelocityCov() const;
-        void setLinearVelocityCov(const base::Matrix3d& cov);
+        void setLinearVelocityCov(const base::Matrix3d& _cov);
         const base::Matrix3d getAngularVelocityCov() const;
-        void setAngularVelocityCov(const base::Matrix3d& cov);
+        void setAngularVelocityCov(const base::Matrix3d& _cov);
 
         const base::Vector3d& getLinearVelocity() const;
-        void setLinearVelocity(const base::Vector3d& vel);
+        void setLinearVelocity(const base::Vector3d& _vel);
         const base::Vector3d& getAngularVelocity() const;
-        void setAngularVelocity(const base::Vector3d& rot);
+        void setAngularVelocity(const base::Vector3d& _rot);
 
         const base::Vector3d& translation() const;
         const base::Vector3d& rotation() const;

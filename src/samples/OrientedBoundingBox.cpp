@@ -4,19 +4,19 @@
 namespace base {
 namespace samples {
 
-OrientedBoundingBox::OrientedBoundingBox(const Time& time,
-                                         const Vector3d& position,
-                                         const Vector3d& dimension,
-                                         const Orientation& orientation) {
-    initOrientedBoundingBox(time, position, dimension, orientation);
+OrientedBoundingBox::OrientedBoundingBox(const Time& _time,
+                                         const Vector3d& _position,
+                                         const Vector3d& _dimension,
+                                         const Orientation& _orientation) {
+    initOrientedBoundingBox(_time, _position, _dimension, _orientation);
 }
 
-void OrientedBoundingBox::initOrientedBoundingBox(const Time& time,
-                                                  const Vector3d& position,
-                                                  const Vector3d& dimension,
-                                                  const Orientation& orientation) {
-    initBoundingBox(time, position, dimension);
-    this->orientation = orientation;
+void OrientedBoundingBox::initOrientedBoundingBox(const Time& _time,
+                                                  const Vector3d& _position,
+                                                  const Vector3d& _dimension,
+                                                  const Orientation& _orientation) {
+    initBoundingBox(_time, _position, _dimension);
+    this->orientation = _orientation;
     this->cov_orientation = Matrix3d::Ones() * unknown<double>();
 }
 

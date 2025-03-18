@@ -19,7 +19,7 @@ namespace base { namespace samples {
              */
             SonarScan();
 
-            SonarScan(uint16_t number_of_beams,uint16_t number_of_bins,Angle start_bearing,Angle angular_resolution,bool memory_layout_column=true);
+            SonarScan(uint16_t _number_of_beams, uint16_t _number_of_bins, Angle _start_bearing, Angle _angular_resolution, bool _memory_layout_column=true);
 
             //makes a copy of other
             SonarScan(const SonarScan &other,bool bcopy = true);
@@ -29,7 +29,7 @@ namespace base { namespace samples {
             //makes a copy of other
             void init(const SonarScan &other,bool bcopy = true);
 
-            void init(uint16_t number_of_beams, uint16_t number_of_bins, Angle start_bearing, Angle angular_resolution,bool memory_layout_column = true, int val=-1);
+            void init(uint16_t _number_of_beams, uint16_t _number_of_bins, Angle _start_bearing, Angle _angular_resolution, bool _memory_layout_column = true, int val=-1);
 
             // if val is negative the sonar scan data will not be initialized
             void reset(int const val = 0);

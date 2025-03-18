@@ -33,8 +33,8 @@ namespace base { namespace samples {
 
         BodyState(bool doInvalidation=true);
 
-        BodyState(const base::TransformWithCovariance& pose, const base::TwistWithCovariance& velocity):
-            pose(pose), velocity(velocity) {};
+        BodyState(const base::TransformWithCovariance& _pose, const base::TwistWithCovariance& _velocity):
+            pose(_pose), velocity(_velocity) {};
 
         /** Time-stamp **/
         base::Time time;
@@ -48,7 +48,7 @@ namespace base { namespace samples {
          * of instantaneous velocity **/
         base::TwistWithCovariance velocity;
 
-        void setPose(const base::Affine3d& pose);
+        void setPose(const base::Affine3d& _pose);
 
         const base::Affine3d getPose() const;
 
@@ -123,7 +123,7 @@ namespace base { namespace samples {
          * position, velocity and angular velocity, Identity for the orientation
          * and infinity for all covariances.
          */
-    	void initUnknown();
+        void initUnknown();
 
         bool hasValidPose() const;
         bool hasValidPoseCovariance() const;
@@ -135,9 +135,9 @@ namespace base { namespace samples {
         void invalidateVelocity();
         void invalidateVelocityCovariance();
 
-        void invalidateValues ( bool pose = true, bool velocity = true);
+        void invalidateValues ( bool _pose = true, bool _velocity = true);
 
-        void invalidateCovariances ( bool pose = true, bool velocity = true);
+        void invalidateCovariances ( bool _pose = true, bool _velocity = true);
 
         /** For backward compatibility with RBS **/
         BodyState& operator=( const base::samples::RigidBodyState& rbs );

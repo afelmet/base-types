@@ -59,7 +59,7 @@ namespace samples
 	{
 	}
 
-	DistanceImage(uint16_t width, uint16_t height): width(width), height(height), scale_x(1.0), scale_y(1.0), center_x(0.0), center_y(0.0)
+	DistanceImage(uint16_t _width, uint16_t _height): width(_width), height(_height), scale_x(1.0), scale_y(1.0), center_x(0.0), center_y(0.0)
 	{
 	}
 
@@ -89,7 +89,7 @@ namespace samples
 	    const scalar d = data[width*y+x];
 	    if( boost::math::isnormal( d ) ) 
 	    {
-		point = Eigen::Matrix<Scalar_,3,1>( (x*scale_x)+center_x, (y*scale_y)+center_y, 1.0 );
+		point = Eigen::Matrix<Scalar_,3,1>( (static_cast<float>(x)*scale_x)+center_x, (static_cast<float>(y)*scale_y)+center_y, 1.0 );
 		point *= d;
 		return true;
 	    }
@@ -164,7 +164,7 @@ namespace samples
 	 * @param c_x center point in x
 	 * @param c_y center point in y
 	 */
-	void setIntrinsic( double f_x, double f_y, double c_x, double c_y );
+	void setIntrinsic( float f_x, float f_y, float c_x, float c_y );
 
 	/** @brief set the size of the distance image
 	 *
@@ -174,7 +174,7 @@ namespace samples
 	 * @param width width of the image
 	 * @param height height of the image
 	 */
-	void setSize( uint16_t width, uint16_t height );
+	void setSize( uint16_t _width, uint16_t _height );
     };
 }
 }

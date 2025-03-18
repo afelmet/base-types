@@ -9,28 +9,28 @@ JointState JointState::Position(double value)
     return ret;
 }
 
-JointState JointState::Speed(float value)
+JointState JointState::Speed(double value)
 {
     JointState ret;
     ret.speed = value;
     return ret;
 }
 
-JointState JointState::Effort(float value)
+JointState JointState::Effort(double value)
 {
     JointState ret;
     ret.effort = value;
     return ret;
 }
 
-JointState JointState::Raw(float value)
+JointState JointState::Raw(double value)
 {
     JointState ret;
     ret.raw = value;
     return ret;
 }
 
-JointState JointState::Acceleration(float value)
+JointState JointState::Acceleration(double value)
 {
     JointState ret;
     ret.acceleration = value;

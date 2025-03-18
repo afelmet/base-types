@@ -23,9 +23,9 @@ namespace geometry {
         SplineBase(SplineBase const& source);
         ~SplineBase();
 
-        explicit SplineBase(int dimension,
-                double geometric_resolution = 0.1, int order = 3);
-        explicit SplineBase(double geometric_resolution, SISLCurve* curve);
+        explicit SplineBase(int _dimension,
+                double _geometric_resolution = 0.1, int order = 3);
+        explicit SplineBase(double _geometric_resolution, SISLCurve* _curve);
 
         /** Changes the default geometric resolution */
         void setGeometricResolution(double _geores) { geometric_resolution = _geores; }
@@ -253,7 +253,7 @@ namespace geometry {
          * create a new curve, do SISL operation, replace current curve by new
          * curve by calling reset(new_curve)
          */
-        void reset(SISLCurve* curve);
+        void reset(SISLCurve* _curve);
         void getPoint(double* result, double _param) const;
         void getPointAndTangent(double* result, double _param) const;
 
@@ -342,13 +342,13 @@ namespace geometry {
         /** Pass-through constructor for Spline<3>. The check on dimensionality
          * is done by Spline<>
          */
-        explicit Spline3Base(int dimension, double geometric_resolution, int order)
-            : SplineBase(3, geometric_resolution, order) {}
+        explicit Spline3Base(int _dimension __attribute__((unused)), double _geometric_resolution, int _order)
+            : SplineBase(3, _geometric_resolution, _order) {}
         /** Pass-through constructor for Spline<3>. The check on dimensionality
          * is done by Spline<>
          */
-        explicit Spline3Base(double geometric_resolution, SISLCurve* curve)
-            : SplineBase(geometric_resolution, curve) {}
+        explicit Spline3Base(double _geometric_resolution, SISLCurve* _curve)
+            : SplineBase(_geometric_resolution, _curve) {}
         Spline3Base(SplineBase const& source)
             : SplineBase(source) {}
 
@@ -402,10 +402,10 @@ namespace geometry {
         typedef Eigen::Matrix<double, DIM, 1, Eigen::AutoAlign> vector_ta;
         typedef Eigen::Transform<double, DIM, Eigen::Affine> transform_t;
 
-        explicit Spline(double geometric_resolution = 0.1, int order = 3)
-            : base_t(DIM, geometric_resolution, order) {}
-        explicit Spline(double geometric_resolution, SISLCurve* curve)
-            : base_t(geometric_resolution, curve)
+        explicit Spline(double _geometric_resolution = 0.1, int _order = 3)
+            : base_t(DIM, _geometric_resolution, _order) {}
+        explicit Spline(double _geometric_resolution, SISLCurve* _curve)
+            : base_t(_geometric_resolution, _curve)
         {
             if (this->getDimension() != DIM)
                 throw std::runtime_error("trying to initialize a Spline<> class with a curve of wrong dimension");
@@ -548,7 +548,7 @@ namespace geometry {
          * parameter */
         std::pair<vector_t, vector_t> getPointAndTangent(double _param) const
         {
-            double result[DIM * 2];
+            double result[static_cast<size_t>(DIM * 2)];
             SplineBase::getPointAndTangent(result, _param);
             vector_t point(result);
             vector_t tangent(result + DIM);
@@ -701,11 +701,11 @@ namespace geometry {
             std::pair<double, double> result;
 
             result = dichotomic_search(start_t, start_p, middle_t, middle_p, test, resolution, parameter_threshold);
-            if (result.first != result.second)
+            if (fabs(result.first - result.second) > 1e-5)
                 return result;
 
             result = dichotomic_search(middle_t, middle_p, end_t, end_p, test, resolution, parameter_threshold);
-            if (result.first != result.second)
+            if (fabs(result.first - result.second) > 1e-5)
                 return result;
 
             throw std::runtime_error("cannot find a solution, but we should have. Is the provided function stable ?");

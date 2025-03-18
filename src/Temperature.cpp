@@ -11,14 +11,14 @@ Temperature::Temperature() : kelvin(unknown<double>())
 
 }
 
-Temperature::Temperature(double kelvin) : kelvin(kelvin)
+Temperature::Temperature(double _kelvin) : kelvin(_kelvin)
 {
 
 }
 
-double Temperature::kelvin2Celsius(double kelvin)
+double Temperature::kelvin2Celsius(double _kelvin)
 {
-    return kelvin - 273.15;
+    return _kelvin - 273.15;
 }
 
 double Temperature::celsius2Kelvin(double celsius)
@@ -26,9 +26,9 @@ double Temperature::celsius2Kelvin(double celsius)
     return celsius + 273.15;
 }
 
-Temperature Temperature::fromKelvin(double kelvin)
+Temperature Temperature::fromKelvin(double _kelvin)
 {
-    return Temperature( kelvin );
+    return Temperature( _kelvin );
 }
 
 Temperature Temperature::fromCelsius(double celsius)
@@ -58,7 +58,7 @@ void Temperature::operator=(const Temperature& other)
 
 bool Temperature::operator==(const Temperature& other) const
 {
-    return this->kelvin == other.kelvin;
+    return fabs(this->kelvin - other.kelvin) < 1e-5;
 }
 
 bool Temperature::operator<(const Temperature& other) const

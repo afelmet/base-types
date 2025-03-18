@@ -16,7 +16,7 @@ namespace base
     public:
         int64_t microseconds;
 
-        static const int UsecPerSec = 1000000LL;
+        static const int64_t UsecPerSec = 1000000LL;
 
         enum Resolution { Seconds = 1, Milliseconds = 1000, Microseconds = 1000000 };
 

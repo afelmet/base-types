@@ -28,19 +28,19 @@ Pointcloud DistanceImage::getPointCloud() const
     return pointCloud;
 }
 
-void DistanceImage::setIntrinsic(double f_x, double f_y, double c_x, double c_y)
+void DistanceImage::setIntrinsic(float f_x, float f_y, float c_x, float c_y)
 {
-    scale_x = 1.0 / f_x;
-    scale_y = 1.0 / f_y;
+    scale_x = 1.0f / f_x;
+    scale_y = 1.0f / f_y;
     center_x = -c_x / f_x;
     center_y = -c_y / f_y;
 }
 
-void DistanceImage::setSize(uint16_t width, uint16_t height)
+void DistanceImage::setSize(uint16_t _width, uint16_t _height)
 {
-    this->width = width;
-    this->height = height;
-    data.resize( (size_t)width * (size_t)height );
+    this->width = _width;
+    this->height = _height;
+    data.resize( static_cast<size_t>(_width) * static_cast<size_t>(_height));
 }
 
 }} //end namespace base::samples

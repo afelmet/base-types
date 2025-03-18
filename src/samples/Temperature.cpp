@@ -2,14 +2,14 @@
 
 namespace base { namespace samples{
 
-    Temperature Temperature::fromKelvin(base::Time const& time, double kelvin)
+    Temperature Temperature::fromKelvin(base::Time const& _time, double kelvin)
     {
-        return Temperature(time, base::Temperature::fromKelvin(kelvin));
+        return Temperature(_time, base::Temperature::fromKelvin(kelvin));
     }
 
-    Temperature Temperature::fromCelsius(base::Time const& time, double celsius)
+    Temperature Temperature::fromCelsius(base::Time const& _time, double celsius)
     {
-        return Temperature(time, base::Temperature::fromCelsius(celsius));
+        return Temperature(_time, base::Temperature::fromCelsius(celsius));
     }
 
 } } //end namespace base::samples

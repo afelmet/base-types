@@ -38,9 +38,9 @@ struct JointsTrajectory
 	struct InvalidTimeStep : public std::runtime_error
 	{
 	    size_t time_step;
-	    InvalidTimeStep(size_t const& time_step)
+	    InvalidTimeStep(size_t const& _time_step)
 		: std::runtime_error("trying to access time_step which is out of range."),
-		  time_step(time_step) {}
+		  time_step(_time_step) {}
 
 	    ~InvalidTimeStep() throw() {}
 	};
@@ -57,9 +57,9 @@ struct JointsTrajectory
      */
     bool isValid() const;
     
-    void resize(int num_joints, int num_samples);
+    void resize(size_t num_joints, size_t num_samples);
     
-    void resize(int num_joints);
+    void resize(size_t num_joints);
     
     /**
      * @brief Extracts the base::samples::Joints structure at a given time step

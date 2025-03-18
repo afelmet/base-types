@@ -55,7 +55,7 @@ void frame::Frame::copyImageIndependantAttributes(const frame::Frame& other)
 void frame::Frame::init(const frame::Frame& other, bool bcopy)
 {
     //hdr is copied by attributes = other.attributes;
-    init(other.getWidth(),other.getHeight(),other.getDataDepth(), other.getFrameMode(),-1,other.getNumberOfBytes());
+    init(other.getWidth(),other.getHeight(),static_cast<uint8_t>(other.getDataDepth()), other.getFrameMode(),255,other.getNumberOfBytes());
     if(bcopy)
         setImage(other.getImage());
     copyImageIndependantAttributes(other);
@@ -138,7 +138,7 @@ bool frame::Frame::isHDR() const
 
 void frame::Frame::setHDR(bool value)
 {
-    setAttribute<bool>("hdr",true);
+    setAttribute<bool>("hdr", value);
 }
 
 bool frame::Frame::isCompressed() const
@@ -260,7 +260,7 @@ uint32_t frame::Frame::getRowSize() const
     return this->row_size;
 }
 
-uint32_t frame::Frame::getNumberOfBytes() const
+uint64_t frame::Frame::getNumberOfBytes() const
 {
     return image.size();
 }

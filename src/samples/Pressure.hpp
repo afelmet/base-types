@@ -18,15 +18,15 @@ namespace base
             Pressure()
                 : base::Pressure(base::Pressure::fromPascal(base::unknown<float>())) {}
 
-            Pressure(base::Time const& time, base::Pressure pressure)
+            Pressure(base::Time const& _time, base::Pressure pressure)
                 : base::Pressure(pressure)
-                , time(time) {}
+                , time(_time) {}
 
-            static Pressure fromPascal(base::Time const& time, float pascal);
+            static Pressure fromPascal(base::Time const& _time, float pascal);
 
-            static Pressure fromBar(base::Time const& time, float bar);
+            static Pressure fromBar(base::Time const& _time, float bar);
 
-            static Pressure fromPSI(base::Time const& time, float psi);
+            static Pressure fromPSI(base::Time const& _time, float psi);
         };
     }
 }

@@ -159,7 +159,8 @@ target_include_directories(base_types PUBLIC
     ${SISL_INCLUDE_DIR}
 )
 
-include_directories(${EIGEN3_INCLUDE_DIR})
+# ignores warnings caused by third-party library Eigen3
+target_include_directories(base_types SYSTEM PUBLIC ${EIGEN3_INCLUDE_DIR})
 
 # Link with dependencies
 target_link_libraries(base_types PRIVATE ${BASE_LOGGING_LIBRARIES})
@@ -168,6 +169,9 @@ target_link_libraries(base_types PUBLIC
     ${Boost_FILESYSTEM_LIBRARY}
     ${SISL_LIBRARY}
 )
+
+# Enable all warnings for space-qualification
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -Wpedantic -Werror -Wconversion -Wsign-conversion -Wshadow -Wfloat-equal -Wnull-dereference -Wformat -Wcast-align -Wpointer-arith -Wunused-result")
 
 # Generate and install pkg-config files
 configure_file(base_types.pc.in ${CMAKE_BINARY_DIR}/base_types.pc @ONLY)

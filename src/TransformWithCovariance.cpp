@@ -35,7 +35,7 @@ TransformWithCovariance TransformWithCovariance::compositionInv(const TransformW
     Eigen::Quaterniond q( q2 * q1 );
 
     // initialize resulting covariance
-    Eigen::Matrix<double,6,6> cov = Eigen::Matrix<double,6,6>::Zero();
+    Eigen::Matrix<double,6,6> _cov = Eigen::Matrix<double,6,6>::Zero();
 
     Eigen::Matrix<double,6,6> J1;
     J1 << q2.toRotationMatrix(), Eigen::Matrix3d::Zero(),
@@ -45,10 +45,10 @@ TransformWithCovariance TransformWithCovariance::compositionInv(const TransformW
     J2 << Eigen::Matrix3d::Identity(), drx_by_dr(q2, t1.translation),
     Eigen::Matrix3d::Zero(), dr2r1_by_r2(q, q1, q2);
 
-    cov = J2.inverse() * ( tf.getCovariance() - J1 * t1.getCovariance() * J1.transpose() ) * J2.transpose().inverse();
+    _cov = J2.inverse() * ( tf.getCovariance() - J1 * t1.getCovariance() * J1.transpose() ) * J2.transpose().inverse();
 
     // and return the resulting uncertainty transform
-    return TransformWithCovariance( p2, q2, cov );
+    return TransformWithCovariance( p2, q2, _cov );
 }
 
 TransformWithCovariance TransformWithCovariance::preCompositionInv(const TransformWithCovariance& trans) const
@@ -69,7 +69,7 @@ TransformWithCovariance TransformWithCovariance::preCompositionInv(const Transfo
     Eigen::Quaterniond q( q2 * q1 );
 
     // initialize resulting covariance
-    Eigen::Matrix<double,6,6> cov = Eigen::Matrix<double,6,6>::Zero();
+    Eigen::Matrix<double,6,6> _cov = Eigen::Matrix<double,6,6>::Zero();
 
     Eigen::Matrix<double,6,6> J1;
     J1 << t2.getTransform().linear(), Eigen::Matrix3d::Zero(),
@@ -79,10 +79,10 @@ TransformWithCovariance TransformWithCovariance::preCompositionInv(const Transfo
     J2 << Eigen::Matrix3d::Identity(), drx_by_dr(q2, p1),
     Eigen::Matrix3d::Zero(), dr2r1_by_r2(q, q1, q2);
 
-    cov = J1.inverse() * ( tf.getCovariance() - J2 * t2.getCovariance() * J2.transpose() ) * J1.transpose().inverse();
+    _cov = J1.inverse() * ( tf.getCovariance() - J2 * t2.getCovariance() * J2.transpose() ) * J1.transpose().inverse();
 
     // and return the resulting uncertainty transform
-    return TransformWithCovariance( p1, q1, cov );
+    return TransformWithCovariance( p1, q1, _cov );
 }
 
 
@@ -105,7 +105,7 @@ TransformWithCovariance TransformWithCovariance::operator*(const TransformWithCo
     const Eigen::Quaterniond q( t2.orientation * t1.orientation );
 
     // initialize resulting covariance
-    Eigen::Matrix<double,6,6> cov = Eigen::Matrix<double,6,6>::Zero();
+    Eigen::Matrix<double,6,6> _cov = Eigen::Matrix<double,6,6>::Zero();
 
     // calculate the Jacobians (this is what all the above functions are for)
     // and add to the resulting covariance
@@ -115,7 +115,7 @@ TransformWithCovariance TransformWithCovariance::operator*(const TransformWithCo
         J1 << t2.getTransform().linear(), Eigen::Matrix3d::Zero(),
         Eigen::Matrix3d::Zero(), dr2r1_by_r1(q, q1, q2);
 
-        cov += J1*t1.getCovariance()*J1.transpose();
+        _cov += J1*t1.getCovariance()*J1.transpose();
     }
 
     if( t2.hasValidCovariance() )
@@ -124,14 +124,14 @@ TransformWithCovariance TransformWithCovariance::operator*(const TransformWithCo
         J2 << Eigen::Matrix3d::Identity(), drx_by_dr(q2, t1.translation),
         Eigen::Matrix3d::Zero(), dr2r1_by_r2(q, q1, q2);
 
-        cov += J2*t2.getCovariance()*J2.transpose();
+        _cov += J2*t2.getCovariance()*J2.transpose();
     }
 
     // and return the resulting uncertainty transform
-    return TransformWithCovariance(p, t, cov);
+    return TransformWithCovariance(p, t, _cov);
 }
 
-std::pair<Eigen::Vector3d, Eigen::Matrix3d> TransformWithCovariance::composePointWithCovariance(const Eigen::Vector3d& point, const Eigen::Matrix3d& cov) const
+std::pair<Eigen::Vector3d, Eigen::Matrix3d> TransformWithCovariance::composePointWithCovariance(const Eigen::Vector3d& point, const Eigen::Matrix3d& _cov) const
 {
     Eigen::Matrix3d R( getTransform().linear() );
     Eigen::Quaterniond q( R );
@@ -139,7 +139,7 @@ std::pair<Eigen::Vector3d, Eigen::Matrix3d> TransformWithCovariance::composePoin
     J << Eigen::Matrix3d::Identity(), drx_by_dr( q, point );
 
     Eigen::Matrix3d tr_point_cov = J*getCovariance()*J.transpose();
-    tr_point_cov += R*cov*R.transpose();
+    tr_point_cov += R*_cov*R.transpose();
 
     return std::make_pair(getTransform() * point, tr_point_cov);
 }
@@ -271,7 +271,7 @@ std::ostream& operator<<(std::ostream& out, const TransformWithCovariance& trans
     Vector3d scaled_axis;
     AngleAxisd angle_axis (trans.orientation);
     scaled_axis = angle_axis.axis() * angle_axis.angle();
-    for (register unsigned short i=0; i<trans.getCovariance().rows(); ++i)
+    for (unsigned short i=0; i<trans.getCovariance().rows(); ++i)
     {
         if (i<3)
         {
@@ -281,7 +281,7 @@ std::ostream& operator<<(std::ostream& out, const TransformWithCovariance& trans
         {
             out<<std::fixed<<std::setprecision(5)<<scaled_axis[i-3]<<"\t|";
         }
-        for (register unsigned short j=0; j<trans.getCovariance().cols(); ++j)
+        for (unsigned short j=0; j<trans.getCovariance().cols(); ++j)
         {
             out<<std::fixed<<std::setprecision(5)<<trans.getCovariance().row(i)[j]<<"\t";
         }

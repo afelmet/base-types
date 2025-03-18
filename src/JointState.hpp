@@ -44,27 +44,27 @@ namespace base
          *    (position1 - position0)/(time1 - * time0).toSeconds()
          * is not necessarily equal to 'speed'
          */
-        float speed;
+        double speed;
 
         /** Torque in N.m for angular joints and N for linear ones
          */
-        float effort;
+        double effort;
 
         /** Raw command to/from the actuator, if this is an actuated joint. It
          * is commonly a PWM value in [0,1]
          */
-        float raw;
+        double raw;
 
         /** Acceleration in radians per square second for angular actuators, in m/ss
          * for linear ones */
-        float acceleration;
+        double acceleration;
 
         JointState()
             : position(base::unset<double>())
-            , speed(base::unset<float>())
-            , effort(base::unset<float>())
-            , raw(base::unset<float>())
-            , acceleration(base::unset<float>()) {}
+            , speed(base::unset<double>())
+            , effort(base::unset<double>())
+            , raw(base::unset<double>())
+            , acceleration(base::unset<double>()) {}
 
         /** Returns a JointState object with the position field set to the given
          * value
@@ -74,22 +74,22 @@ namespace base
         /** Returns a JointState object with the speed field set to the given
          * value
          */
-        static JointState Speed(float value);
+        static JointState Speed(double value);
 
         /** Returns a JointState object with the effort field set to the given
          * value
          */
-        static JointState Effort(float value);
+        static JointState Effort(double value);
 
         /** Returns a JointState object with the raw field set to the given
          * value
          */
-        static JointState Raw(float value);
+        static JointState Raw(double value);
 
         /** Returns a JointState object with the acceleration field set to the given
          * value
          */
-        static JointState Acceleration(float value);
+        static JointState Acceleration(double value);
 
         /** Tests whether the position field is set */
         bool hasPosition() const;

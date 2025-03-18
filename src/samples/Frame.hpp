@@ -136,7 +136,7 @@ namespace base { namespace samples { namespace frame {
 	     /**
 	     * Returns the total number of bytes for the image
 	     */
-	    uint32_t getNumberOfBytes() const;
+	    uint64_t getNumberOfBytes() const;
 
 	    /**
 	     * Returns the total count of pixels in this frame

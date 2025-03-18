@@ -12,7 +12,7 @@ struct TimeMark
     Time mark;
     clock_t clock;
 
-    TimeMark(const std::string& label);
+    TimeMark(const std::string& _label);
 
     /** Return the time that has passed since the recorded time and now */
     Time passed() const;

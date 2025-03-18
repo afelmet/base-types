@@ -7,9 +7,9 @@ Wrench::Wrench()
     setNaN();
 }
 
-Wrench::Wrench(base::Vector3d force, base::Vector3d torque) :
-    force(force),
-    torque(torque)
+Wrench::Wrench(base::Vector3d _force, base::Vector3d _torque) :
+    force(_force),
+    torque(_torque)
 {
 }
 

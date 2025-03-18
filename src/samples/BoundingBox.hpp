@@ -17,16 +17,16 @@ namespace samples {
  */
 struct BoundingBox {
     explicit BoundingBox(
-        const Time& time = Time(),
-        const Vector3d& position = Vector3d::Ones() * unknown<double>(),
-        const Vector3d& dimension = Vector3d::Ones() * unknown<double>());
+        const Time& _time = Time(),
+        const Vector3d& _position = Vector3d::Ones() * unknown<double>(),
+        const Vector3d& _dimension = Vector3d::Ones() * unknown<double>());
 
     /**
      * Initialize the structure fields.
      */
-    void initBoundingBox(const Time& time,
-                         const Vector3d& position,
-                         const Vector3d& dimension);
+    void initBoundingBox(const Time& _time,
+                         const Vector3d& _position,
+                         const Vector3d& _dimension);
 
     /**
      * Returns true if the position and the dimension of the bounding box are

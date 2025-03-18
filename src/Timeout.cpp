@@ -2,7 +2,7 @@
 
 namespace base {
 
-Timeout::Timeout(Time timeout) : timeout(timeout) 
+Timeout::Timeout(Time _timeout) : timeout(_timeout)
 {
     start_time = Time::now();
 }
@@ -17,11 +17,11 @@ bool Timeout::elapsed() const
     return elapsed(timeout);
 }
 
-bool Timeout::elapsed(const Time& timeout) const
+bool Timeout::elapsed(const Time& _timeout) const
 {
-    if(!timeout.isNull())
+    if(!_timeout.isNull())
     {
-        return start_time + timeout < Time::now();
+        return start_time + _timeout < Time::now();
     }
     else
     {
@@ -34,11 +34,11 @@ Time Timeout::timeLeft() const
     return timeLeft(timeout);
 }
 
-Time Timeout::timeLeft(const Time& timeout) const
+Time Timeout::timeLeft(const Time& _timeout) const
 {
-    if(!timeout.isNull())
+    if(!_timeout.isNull())
     {
-        return start_time + timeout - Time::now();
+        return start_time + _timeout - Time::now();
     }
     else
     {

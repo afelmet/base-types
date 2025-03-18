@@ -17,20 +17,20 @@ struct Waypoint {
     Waypoint();
 
     /* The default values are initialized with zeros. */
-    explicit Waypoint(base::Vector3d const &position,
-                      double heading = 0);
+    explicit Waypoint(base::Vector3d const &_position,
+                      double _heading = 0);
 
     /* use Vector3d */
-    Waypoint(base::Vector3d const &position,
-             double heading,
-             double tol_position,
-             double tol_heading);
+    Waypoint(base::Vector3d const &_position,
+             double _heading,
+             double _tol_position,
+             double _tol_heading);
 
     /* convenience: same for Eigen::Vector3d */
-    Waypoint(Eigen::Vector3d const &position,
-             double heading,
-             double tol_position,
-             double tol_heading);
+    Waypoint(Eigen::Vector3d const &_position,
+             double _heading,
+             double _tol_position,
+             double _tol_heading);
 
     /* Three-dimensional position (x, y, z) */
     base::Vector3d position;

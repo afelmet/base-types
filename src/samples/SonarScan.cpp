@@ -23,9 +23,9 @@ SonarScan::SonarScan()
     reset();
 }
 
-SonarScan::SonarScan(uint16_t number_of_beams, uint16_t number_of_bins, Angle start_bearing, Angle angular_resolution, bool memory_layout_column)
+SonarScan::SonarScan(uint16_t _number_of_beams, uint16_t _number_of_bins, Angle _start_bearing, Angle _angular_resolution, bool _memory_layout_column)
 {
-    init(number_of_beams,number_of_bins,start_bearing,angular_resolution,memory_layout_column);
+    init(_number_of_beams, _number_of_bins, _start_bearing, _angular_resolution, _memory_layout_column);
 }
 
 SonarScan::SonarScan(const SonarScan& other, bool bcopy)
@@ -56,18 +56,18 @@ void SonarScan::init(const SonarScan& other, bool bcopy)
     }
 }
 
-void SonarScan::init(uint16_t number_of_beams, uint16_t number_of_bins, Angle start_bearing, Angle angular_resolution, bool memory_layout_column, int val)
+void SonarScan::init(uint16_t _number_of_beams, uint16_t _number_of_bins, Angle _start_bearing, Angle _angular_resolution, bool _memory_layout_column, int val)
 {
     //change size if the sonar scan does not fit
-    if(this->number_of_beams != number_of_beams || this->number_of_bins !=  number_of_bins)
+    if(this->number_of_beams != _number_of_beams || this->number_of_bins !=  _number_of_bins)
     {
-        this->number_of_beams = number_of_beams;
-        this->number_of_bins = number_of_bins;
-        data.resize(number_of_beams*number_of_bins);
+        this->number_of_beams = _number_of_beams;
+        this->number_of_bins = _number_of_bins;
+        data.resize(_number_of_beams * _number_of_bins);
     }
-    this->start_bearing = start_bearing;
-    this->angular_resolution = angular_resolution;
-    this->memory_layout_column = memory_layout_column;
+    this->start_bearing = _start_bearing;
+    this->angular_resolution = _angular_resolution;
+    this->memory_layout_column = _memory_layout_column;
     speed_of_sound = 0;
     beamwidth_horizontal = Angle::fromRad(0);
     beamwidth_vertical = Angle::fromRad(0);
@@ -87,7 +87,7 @@ void SonarScan::reset(const int val)
 int SonarScan::beamIndexForBearing(const Angle bearing, bool range_check) const
 {
     double temp_rad = (start_bearing-bearing).rad;
-    int index = round(temp_rad/angular_resolution.rad);
+    int index = static_cast<int>(round(temp_rad/angular_resolution.rad));
     if(range_check && (index < 0 || index >= number_of_beams))
         return -1;
     return index;
@@ -100,9 +100,8 @@ bool SonarScan::hasSonarBeam(const SonarBeam& sonar_beam) const
 
 bool SonarScan::hasSonarBeam(const Angle bearing) const
 {
-    int index = beamIndexForBearing(bearing);
-    if(index < 0)
-        return false;
+    size_t index = static_cast<size_t>(beamIndexForBearing(bearing));
+    // if(index < 0) return false;
 
     //it is assumed that all data are set at once (imaging sonar)
     if(time_beams.empty()) 
@@ -122,14 +121,14 @@ void SonarScan::addSonarBeam(const SonarBeam& sonar_beam, bool resize)
     if(number_of_bins < sonar_beam.beam.size())
         throw std::runtime_error("addSonarBeam: cannot add sonar beam: too many bins");
 
-    int index = beamIndexForBearing(sonar_beam.bearing,false);
-    if(index < 0)
-        throw std::runtime_error("addSonarBeam: negative index!");
+    size_t index = static_cast<size_t>(beamIndexForBearing(sonar_beam.bearing,false));
+    // if(index < 0) throw std::runtime_error("addSonarBeam: negative index!");
+
     if(index >= number_of_beams)
     {
         if(!resize)
             throw std::runtime_error("addSonarBeam: bearing is out of range");
-        number_of_beams = index+1;
+        number_of_beams = static_cast<uint16_t>(index + 1);
         data.resize(number_of_beams*number_of_bins);
     }
     if(time_beams.size() != number_of_beams)
@@ -147,19 +146,18 @@ void SonarScan::getSonarBeam(const Angle bearing, SonarBeam& sonar_beam) const
 {
     if(memory_layout_column)
         throw std::runtime_error("getSonarBeam: Wrong memory layout!");
-    int index = beamIndexForBearing(bearing);
-    if(index<0)
-        throw std::runtime_error("getSonarBeam: No Data for the given bearing!");
+    size_t index = static_cast<size_t>(beamIndexForBearing(bearing));
+    // if(index<0) throw std::runtime_error("getSonarBeam: No Data for the given bearing!");
 
     sonar_beam.beam.resize(number_of_bins);
     memcpy(&sonar_beam.beam[0],&data[number_of_bins*index],number_of_bins);
-    if((int)time_beams.size() > index)
+    if(time_beams.size() > index)
         sonar_beam.time = time_beams[index];
     else
         sonar_beam.time = time;
     sonar_beam.speed_of_sound = speed_of_sound;
-    sonar_beam.beamwidth_horizontal = beamwidth_horizontal.rad;
-    sonar_beam.beamwidth_vertical = beamwidth_vertical.rad;
+    sonar_beam.beamwidth_horizontal = static_cast<float>(beamwidth_horizontal.rad);
+    sonar_beam.beamwidth_vertical = static_cast<float>(beamwidth_vertical.rad);
     sonar_beam.sampling_interval = sampling_interval;
     sonar_beam.bearing = bearing;
 }
@@ -173,13 +171,13 @@ void SonarScan::toggleMemoryLayout()
     {
         for(int row=0;row < number_of_beams;++row)
             for(int column=0;column < number_of_bins;++column)
-                temp[row*number_of_bins+column] =data[column*number_of_beams+row]; 
+                temp[static_cast<size_t>(row*number_of_bins+column)] = data[static_cast<size_t>(column*number_of_beams+row)];
     }
     else
     {
         for(int row=0;row < number_of_beams;++row)
             for(int column=0;column < number_of_bins;++column)
-                temp[column*number_of_beams+row] =data[row*number_of_bins+column]; 
+                temp[static_cast<size_t>(column*number_of_beams+row)] = data[static_cast<size_t>(row*number_of_bins+column)];
     }
     memory_layout_column = !memory_layout_column;
     data.swap(temp);
@@ -231,7 +229,7 @@ void SonarScan::swap(SonarScan& sonar_scan)
 
 uint32_t SonarScan::getNumberOfBytes() const
 {
-    return data.size();
+    return static_cast<uint32_t>(data.size());
 }
 
 uint32_t SonarScan::getBinCount() const
@@ -267,12 +265,12 @@ double SonarScan::getSpatialResolution() const
     return sampling_interval*0.5*speed_of_sound;
 }
 
-void SonarScan::setData(const std::vector< uint8_t >& data)
+void SonarScan::setData(const std::vector< uint8_t >& _data)
 {
-    this->data = data;
+    this->data = _data;
 }
 
-void SonarScan::setData(const char* data, uint32_t size)
+void SonarScan::setData(const char* _data, uint32_t size)
 {
     if (size != this->data.size())
     {
@@ -283,7 +281,7 @@ void SonarScan::setData(const char* data, uint32_t size)
                                         << std::endl;
         return;
     }
-    memcpy(&this->data[0], data, size);
+    memcpy(&this->data[0], _data, size);
 }
 
 uint8_t* SonarScan::getDataPtr()

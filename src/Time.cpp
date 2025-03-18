@@ -90,7 +90,7 @@ Time Time::operator/(int divider) const
 
 Time Time::operator*(double factor) const
 {
-    return Time(microseconds * factor);
+    return Time(static_cast<int64_t>(static_cast<double>(microseconds) * factor));
 }
 
 bool Time::isNull() const
@@ -106,22 +106,22 @@ timeval Time::toTimeval() const
 
 vector<int> Time::toTimeValues() const
 {
-    int64_t microseconds = this->microseconds;
+    int64_t _microseconds = this->microseconds;
 
-    int64_t days = microseconds / 86400000000ll;
-    microseconds -= days * 86400000000ll;
-    int64_t hours = microseconds / 3600000000ll;
-    microseconds -= hours * 3600000000ll;
-    int64_t minutes = microseconds / 60000000ll;
-    microseconds -= minutes * 60000000ll;
-    int64_t seconds = microseconds / 1000000ll;
-    microseconds -= seconds * 1000000ll;
-    int64_t milliseconds = microseconds / 1000ll;
-    microseconds -= milliseconds * 1000ll;
+    int64_t days = _microseconds / 86400000000ll;
+    _microseconds -= days * 86400000000ll;
+    int64_t hours = _microseconds / 3600000000ll;
+    _microseconds -= hours * 3600000000ll;
+    int64_t minutes = _microseconds / 60000000ll;
+    _microseconds -= minutes * 60000000ll;
+    int64_t seconds = _microseconds / 1000000ll;
+    _microseconds -= seconds * 1000000ll;
+    int64_t milliseconds = _microseconds / 1000ll;
+    _microseconds -= milliseconds * 1000ll;
 
     vector<int> timeValues;
     timeValues.reserve(6);
-    timeValues.push_back(static_cast<int>(microseconds));
+    timeValues.push_back(static_cast<int>(_microseconds));
     timeValues.push_back(static_cast<int>(milliseconds));
     timeValues.push_back(static_cast<int>(seconds));
     timeValues.push_back(static_cast<int>(minutes));
@@ -135,7 +135,7 @@ string Time::toString(Time::Resolution resolution,
         const string& mainFormat) const
 {
     struct timeval tv = toTimeval();
-    int uSecs = tv.tv_usec;
+    int64_t uSecs = tv.tv_usec;
 
     time_t when = tv.tv_sec;
     struct tm *tm = localtime(&when);
@@ -153,10 +153,10 @@ string Time::toString(Time::Resolution resolution,
             sprintf(buffer,"%s%s", time, tzInfo);
             break;
         case Milliseconds:
-            sprintf(buffer,"%s:%03d%s", time, (int) (uSecs/1000.0),tzInfo);
+            sprintf(buffer,"%s:%03ld%s", time, static_cast<int64_t>(static_cast<double>(uSecs)/1000.0),tzInfo);
             break;
         case Microseconds:
-            sprintf(buffer,"%s:%06d%s", time, uSecs,tzInfo);
+            sprintf(buffer,"%s:%06ld%s", time, uSecs,tzInfo);
             break;
         default:
             throw invalid_argument(
@@ -208,9 +208,9 @@ Time Time::fromSeconds(int64_t value, int microseconds)
 
 Time Time::fromSeconds(double value)
 {
-    int64_t seconds = value;
-    return Time(seconds * UsecPerSec +
-                static_cast<int64_t>(round((value - seconds) * UsecPerSec)));
+    double seconds = floor(value);
+    return Time(static_cast<int64_t>(seconds) * UsecPerSec
+              + static_cast<int64_t>(round(value - seconds) * static_cast<double>(UsecPerSec)));
 }
 
 Time Time::max()
@@ -318,7 +318,7 @@ Time Time::fromString(const string& stringTime, Time::Resolution resolution,
 
         // 'tm' is the time represented by the string. It is `tzInfo` seconds away from UTC
         int64_t tzOffset = Time::tzInfoToSeconds(tzInfo);
-        tm.tm_sec += tzOffset;
+        tm.tm_sec += static_cast<int>(tzOffset);
 
         // OK, now `tm` is the string's time in UTC. Note that mktime handles wraparounds
         tm.tm_isdst = -1;

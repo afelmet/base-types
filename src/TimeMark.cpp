@@ -2,7 +2,7 @@
 
 namespace base {
 
-TimeMark::TimeMark(const std::string& label) : label(label), mark( Time::now() ), clock( ::clock() )
+TimeMark::TimeMark(const std::string& _label) : label(_label), mark( Time::now() ), clock( ::clock() )
 {
 
 }

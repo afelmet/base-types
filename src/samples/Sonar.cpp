@@ -3,22 +3,22 @@
 
 namespace base { namespace samples {
 
-void Sonar::resize(int bin_count, int beam_count, bool per_beam_timestamps)
+void Sonar::resize(uint32_t _bin_count, uint32_t _beam_count, bool per_beam_timestamps)
 {
     if (per_beam_timestamps)
-        timestamps.resize(beam_count);
+        timestamps.resize(_beam_count);
     else
         timestamps.clear();
 
-    bearings.resize(beam_count, Angle::unknown());
-    bins.resize(beam_count * bin_count, unknown<float>());
-    this->bin_count = bin_count;
-    this->beam_count = beam_count;
+    bearings.resize(static_cast<size_t>(_beam_count), Angle::unknown());
+    bins.resize(static_cast<size_t>(_beam_count) * static_cast<size_t>(_bin_count), unknown<float>());
+    this->bin_count = _bin_count;
+    this->beam_count = _beam_count;
 }
 
-Sonar Sonar::fromSingleBeam(Time time, Time bin_duration, Angle beam_width, Angle beam_height, const std::vector< float >& bins, Angle bearing, float speed_of_sound)
+Sonar Sonar::fromSingleBeam(Time _time, Time _bin_duration, Angle _beam_width, Angle _beam_height, const std::vector< float >& bins, Angle bearing, float speed_of_sound)
 {
-    Sonar sample(time, bin_duration, bins.size(), beam_width, beam_height);
+    Sonar sample(_time, _bin_duration, static_cast<uint32_t>(bins.size()), _beam_width, _beam_height);
     sample.speed_of_sound = speed_of_sound;
     sample.pushBeam(bins, bearing);
     return sample;
@@ -44,7 +44,7 @@ Time Sonar::getBinTime(unsigned int bin, unsigned int beam) const
 
 float Sonar::getBinStartDistance(unsigned int bin) const
 {
-    return getBinRelativeStartTime(bin).toSeconds() * speed_of_sound;
+    return static_cast<float>(getBinRelativeStartTime(bin).toSeconds() * speed_of_sound);
 }
 
 void Sonar::setRegularBeamBearings(Angle start, Angle interval)
@@ -55,17 +55,17 @@ void Sonar::setRegularBeamBearings(Angle start, Angle interval)
         bearings[i] = angle;
 }
 
-void Sonar::pushBeam(const std::vector< float >& bins)
+void Sonar::pushBeam(const std::vector< float >& _bins)
 {
     if (!timestamps.empty())
         throw std::invalid_argument("cannot call pushBeam(bins): the structure uses per-beam timestamps, use pushBeams(time, bins) instead");
 
-    pushBeamBins(bins);
+    pushBeamBins(_bins);
 }
 
-void Sonar::pushBeam(const std::vector< float >& bins, Angle bearing)
+void Sonar::pushBeam(const std::vector< float >& _bins, Angle bearing)
 {
-    pushBeam(bins);
+    pushBeam(_bins);
     bearings.push_back(bearing);
 }
 
@@ -89,23 +89,23 @@ void Sonar::pushBeamBins(const std::vector< float >& beam_bins)
     beam_count++;
 }
 
-void Sonar::setBeam(unsigned int beam, const std::vector< float >& bins)
+void Sonar::setBeam(unsigned int beam, const std::vector< float >& _bins)
 {
     if (!timestamps.empty())
         throw std::invalid_argument("cannot call setBeam(bins): the structure uses per-beam timestamps, use setBeams(time, bins) instead");
 
-    setBeamBins(beam, bins);
+    setBeamBins(static_cast<int>(beam), _bins);
 }
 
-void Sonar::setBeam(unsigned int beam, const std::vector< float >& bins, Angle bearing)
+void Sonar::setBeam(unsigned int beam, const std::vector< float >& _bins, Angle bearing)
 {
-    setBeam(beam, bins);
+    setBeam(beam, _bins);
     bearings[beam] = bearing;
 }
 
 void Sonar::setBeam(unsigned int beam, const Time& beam_time, const std::vector< float >& beam_bins)
 {
-    setBeamBins(beam, beam_bins);
+    setBeamBins(static_cast<int>(beam), beam_bins);
     timestamps[beam] = beam_time;
 }
 
@@ -119,7 +119,7 @@ void Sonar::setBeamBins(int beam, const std::vector< float >& beam_bins)
 {
     if (beam_bins.size() != bin_count)
         throw std::invalid_argument("pushBeam: the provided beam does not match the expected bin_count");
-    std::copy(beam_bins.begin(), beam_bins.end(), bins.begin() + beam * bin_count);
+    std::copy(beam_bins.begin(), beam_bins.end(), bins.begin() + static_cast<uint32_t>(beam) * bin_count);
 }
 
 Angle Sonar::getBeamBearing(unsigned int beam) const
@@ -129,9 +129,9 @@ Angle Sonar::getBeamBearing(unsigned int beam) const
 
 std::vector< float > Sonar::getBeamBins(unsigned int beam) const
 {
-    std::vector<float> bins;
-    getBeamBins(beam, bins);
-    return bins;
+    std::vector<float> _bins;
+    getBeamBins(beam, _bins);
+    return _bins;
 }
 
 void Sonar::getBeamBins(unsigned int beam, std::vector< float >& beam_bins) const
@@ -196,23 +196,25 @@ Sonar::Sonar(SonarBeam const& old, float gain)
     , beam_width(Angle::fromRad(old.beamwidth_horizontal))
     , beam_height(Angle::fromRad(old.beamwidth_vertical))
     , speed_of_sound(old.speed_of_sound)
-    , bin_count(old.beam.size())
+    , bin_count(static_cast<uint32_t>(old.beam.size()))
     , beam_count(0)
 {
-    std::vector<float> bins;
-    bins.resize(bin_count);
+    std::vector<float> _bins;
+    _bins.resize(bin_count);
     for (unsigned int i = 0; i < bin_count; ++i)
-        bins[i] = static_cast<float>(old.beam[i] * 1.0 / 255) * gain;
-    pushBeam(bins, old.bearing);
+        _bins[i] = static_cast<float>(old.beam[i] * 1.0 / 255) * gain;
+    pushBeam(_bins, old.bearing);
 }
 
 SonarBeam Sonar::toSonarBeam(float gain)
 {
+    using namespace std::placeholders;
+
     SonarBeam sonar_beam;
     sonar_beam.time = time;
     sonar_beam.speed_of_sound = speed_of_sound;
-    sonar_beam.beamwidth_horizontal = beam_width.rad;
-    sonar_beam.beamwidth_vertical = beam_height.rad;
+    sonar_beam.beamwidth_horizontal = static_cast<float>(beam_width.rad);
+    sonar_beam.beamwidth_vertical = static_cast<float>(beam_height.rad);
     sonar_beam.bearing = bearings[0];
     sonar_beam.sampling_interval = bin_duration.toSeconds() * 2.0;
 
@@ -220,9 +222,9 @@ SonarBeam Sonar::toSonarBeam(float gain)
     std::vector<float> raw_data(bins.begin(), bins.end());
     std::vector<float>::iterator max = std::max_element(raw_data.begin(), raw_data.end());
     if (*max > 1)
-        std::transform(raw_data.begin(), raw_data.end(), raw_data.begin(), std::bind2nd(std::divides<float>(), *max));
+        std::transform(raw_data.begin(), raw_data.end(), raw_data.begin(), std::bind(std::divides<float>(), _1, *max));
 
-    std::transform(raw_data.begin(), raw_data.end(), raw_data.begin(), std::bind2nd(std::multiplies<float>(), 255 * gain));
+    std::transform(raw_data.begin(), raw_data.end(), raw_data.begin(), std::bind(std::multiplies<float>(), _1, 255 * gain));
 
     std::vector<uint8_t> data(raw_data.begin(), raw_data.end());
     sonar_beam.beam = data;
@@ -231,12 +233,14 @@ SonarBeam Sonar::toSonarBeam(float gain)
 
 SonarScan Sonar::toSonarScan(float gain)
 {
+    using namespace std::placeholders;
+
     SonarScan sonar_scan;
     sonar_scan.time = time;
     sonar_scan.time_beams = timestamps;
     sonar_scan.speed_of_sound = speed_of_sound;
-    sonar_scan.number_of_bins = bin_count;
-    sonar_scan.number_of_beams = beam_count;
+    sonar_scan.number_of_bins = static_cast<uint16_t>(bin_count);
+    sonar_scan.number_of_beams = static_cast<uint16_t>(beam_count);
     sonar_scan.beamwidth_horizontal = beam_width;
     sonar_scan.beamwidth_vertical = beam_height;
     sonar_scan.start_bearing = bearings[0];
@@ -248,9 +252,9 @@ SonarScan Sonar::toSonarScan(float gain)
     std::vector<float> raw_data(bins.begin(), bins.end());
     std::vector<float>::iterator max = std::max_element(raw_data.begin(), raw_data.end());
     if (*max > 1)
-        std::transform(raw_data.begin(), raw_data.end(), raw_data.begin(), std::bind2nd(std::divides<float>(), *max));
+        std::transform(raw_data.begin(), raw_data.end(), raw_data.begin(), std::bind(std::divides<float>(), _1, *max));
 
-    std::transform(raw_data.begin(), raw_data.end(), raw_data.begin(), std::bind2nd(std::multiplies<float>(), 255 * gain));
+    std::transform(raw_data.begin(), raw_data.end(), raw_data.begin(), std::bind(std::multiplies<float>(), _1, 255 * gain));
 
     std::vector<uint8_t> data(raw_data.begin(), raw_data.end());
     sonar_scan.data = data;

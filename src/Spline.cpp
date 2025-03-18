@@ -35,9 +35,9 @@ SplineBase::SplineBase (int dim, double _geometric_resolution, int _curve_order)
         throw std::runtime_error("dimension must be strictly positive");
 }
 
-SplineBase::SplineBase(double geometric_resolution, SISLCurve* curve)
-    : dimension(curve->idim), curve(curve), geometric_resolution(geometric_resolution)
-    , curve_order(curve->ik)
+SplineBase::SplineBase(double _geometric_resolution, SISLCurve* _curve)
+    : dimension(_curve->idim), curve(_curve), geometric_resolution(_geometric_resolution)
+    , curve_order(_curve->ik)
     , start_param(0), end_param(0)
     , has_curvature_max(false), curvature_max(-1)
 {
@@ -236,7 +236,7 @@ double SplineBase::getCurvatureMax()
 
     //Note this is wrong, but keeps backward compability
     double unitParam = 0;
-    if(start_param != end_param)
+    if(fabs(start_param - end_param) < 1e-5)
         unitParam = (end_param - start_param) / getCurveLength();
 
     double const delPara = unitParam * geometric_resolution;
@@ -268,7 +268,7 @@ void SplineBase::interpolate(const vector< double >& points,
     start_param = 0.0;
     has_curvature_max = false;
 
-    unsigned int const point_count = points.size() / dimension;
+    long unsigned int const point_count = points.size() / static_cast<size_t>(dimension);
     if (point_count == 0)
     {
         end_param = 0;
@@ -294,7 +294,7 @@ void SplineBase::interpolate(const vector< double >& points,
     }
     else
     {
-        if (coord_types.size() * dimension != points.size()) {
+        if (coord_types.size() * static_cast<size_t>(dimension) != points.size()) {
             throw std::runtime_error("base::geometry::SplineBase::interpolate(): "
                                      "'points.size()' does not match expectation");
         }
@@ -308,13 +308,13 @@ void SplineBase::interpolate(const vector< double >& points,
     int status;
     if (parametersIn.empty())
     {
-        s1356(const_cast<double*>(&points[0]), point_types.size(), dimension, &point_types[0],
+        s1356(const_cast<double*>(&points[0]), static_cast<int>(point_types.size()), dimension, &point_types[0],
                 0, 0, 1, curve_order, start_param, &end_param, &curve,
                 &point_param, &nb_unique_param, &status);
     }
     else
     {
-        s1357(const_cast<double*>(&points[0]), point_types.size(), dimension, &point_types[0],
+        s1357(const_cast<double*>(&points[0]), static_cast<int>(point_types.size()), dimension, &point_types[0],
                 const_cast<double*>(&parametersIn[0]),
                 0, 0, 1, curve_order, start_param, &end_param, &curve,
                 &point_param, &nb_unique_param, &status);
@@ -326,7 +326,7 @@ void SplineBase::interpolate(const vector< double >& points,
         {
             str << " (" << points[0];
             for (int c = 1; c < dimension; ++c)
-                str << " " << points[c];
+                str << " " << points[static_cast<size_t>(c)];
             str << ")";
         }
 
@@ -334,7 +334,7 @@ void SplineBase::interpolate(const vector< double >& points,
         {
             str << " with parameters ";
             for (unsigned int c = 0; c < parametersIn.size(); ++c)
-                str << " " << parametersIn[c];
+                str << " " << parametersIn[static_cast<size_t>(c)];
         }
 
         throw std::runtime_error(
@@ -451,7 +451,7 @@ void SplineBase::reset(std::vector<double> const& coordinates, std::vector<doubl
             ++stride;
     }
 
-    SISLCurve* new_curve = newCurve(coordinates.size() / stride,
+    SISLCurve* new_curve = newCurve(static_cast<int>(coordinates.size()) / stride,
             getCurveOrder(), const_cast<double*>(&knots[0]), const_cast<double*>(&coordinates[0]),
             kind, dimension, 1);
     reset(new_curve);
@@ -711,18 +711,18 @@ void SplineBase::append(SplineBase const& other, double tolerance)
     }
     else if (isSingleton())
     {
-        std::vector<double> p(getDimension());
+        std::vector<double> p(static_cast<size_t>(getDimension()));
         other.getPoint(&p[0], other.getStartParam());
 
         if (point_distance(&p[0], &singleton[0], getDimension()) > tolerance)
         {
-            std::vector<double> end_p(getDimension());
+            std::vector<double> end_p(static_cast<size_t>(getDimension()));
             other.getPoint(&end_p[0], other.getEndParam());
             std::ostringstream singleton_pos, other_start_pos, other_end_pos;
             singleton_pos   << " (" << singleton[0];
             other_start_pos << " (" << p[0];
             other_end_pos   << " (" << end_p[0];
-            for (int c = 1; c < dimension; ++c)
+            for (size_t c = 1; c < static_cast<size_t>(dimension); ++c)
             {
                 singleton_pos   << " " << singleton[c];
                 other_start_pos << " " << p[c];
@@ -765,6 +765,8 @@ double SplineBase::join(SplineBase const& other, double tolerance, bool with_tan
 
     double* end_point = 0, * start_point = 0;
 
+    size_t dims = static_cast<size_t>(dim);
+
     if (isEmpty())
     {
         *this = other;
@@ -774,18 +776,18 @@ double SplineBase::join(SplineBase const& other, double tolerance, bool with_tan
         return 0;
     else if (!with_tangents)
     {
-        joining_points.resize(2 * dim);
+        joining_points.resize(2 * dims);
         getPoint(&joining_points[0], getEndParam());
-        other.getPoint(&joining_points[dim], other.getStartParam());
+        other.getPoint(&joining_points[dims], other.getStartParam());
         start_point = &joining_points[0];
-        end_point   = &joining_points[dim];
+        end_point   = &joining_points[dims];
         joining_types[0] = 1;
         joining_types[1] = 1;
     }
     else if (isSingleton() && other.isSingleton())
     {
         std::vector<double> line;
-        line.resize(dim * 2);
+        line.resize(dims * 2);
         copy(singleton.begin(), singleton.end(), line.begin());
         copy(other.singleton.begin(), other.singleton.end(), line.begin() + dim);
         interpolate(line);
@@ -793,52 +795,52 @@ double SplineBase::join(SplineBase const& other, double tolerance, bool with_tan
     }
     else if (other.isSingleton())
     {
-        joining_points.resize(3 * dim);
+        joining_points.resize(3 * dims);
         getPointAndTangent(&joining_points[0], getEndParam());
         copy(other.singleton.begin(), other.singleton.end(), joining_points.begin() + 2 * dim);
-        for (int i = 0; i < dim; ++i)
-            joining_points[i + dim] += joining_points[i];
+        for (size_t i = 0; i < dims; ++i)
+            joining_points[i + dims] += joining_points[i];
         start_point = &joining_points[0];
-        end_point   = &joining_points[2 * dim];
+        end_point   = &joining_points[2 * dims];
         joining_types[0] = 1;
         joining_types[1] = 14;
         joining_types[2] = 1;
     }
     else if (isSingleton())
     {
-        joining_points.resize(3 * dim);
+        joining_points.resize(3 * dims);
         copy(singleton.begin(), singleton.end(), joining_points.begin());
-        other.getPointAndTangent(&joining_points[dim], other.getStartParam());
-        for (int i = 0; i < dim; ++i)
-            joining_points[i + 2 * dim] += joining_points[i + dim];
+        other.getPointAndTangent(&joining_points[dims], other.getStartParam());
+        for (size_t i = 0; i < dims; ++i)
+            joining_points[i + 2 * dims] += joining_points[i + dims];
         start_point = &joining_points[0];
-        end_point   = &joining_points[dim];
+        end_point   = &joining_points[dims];
         joining_types[0] = 1;
         joining_types[1] = 1;
         joining_types[2] = 14;
     }
     else
     {
-        joining_points.resize(4 * dim);
+        joining_points.resize(4 * dims);
         // We get the tangents as well as the points, as we might need them later
         getPointAndTangent(&joining_points[0], getEndParam());
-        other.getPointAndTangent(&joining_points[2 * dim], other.getStartParam());
+        other.getPointAndTangent(&joining_points[2 * dims], other.getStartParam());
         start_point = &joining_points[0];
-        end_point   = &joining_points[2 * dim];
+        end_point   = &joining_points[2 * dims];
         joining_types[0] = 1;
         joining_types[1] = 14;
         joining_types[2] = 1;
         joining_types[3] = 14;
 
-        for (int i = 0; i < dim; ++i)
+        for (size_t i = 0; i < dims; ++i)
         {
-            joining_points[i + dim] += joining_points[i];
-            joining_points[i + 3 * dim] += joining_points[i + 2 * dim];
+            joining_points[i + dims] += joining_points[i];
+            joining_points[i + 3 * dims] += joining_points[i + 2 * dims];
         }
     }
 
     double dist = 0;
-    for (int i = 0; i < dim; ++i)
+    for (size_t i = 0; i < dims; ++i)
     {
         double d = (start_point[i] - end_point[i]);
         dist += d * d;
@@ -860,12 +862,12 @@ double SplineBase::join(SplineBase const& other, double tolerance, bool with_tan
     int ret;
 
     //be sure joining_Types has the right size
-    if (joining_points.size() / dim > 4) {
+    if (joining_points.size() / dims > 4) {
         throw std::runtime_error("SplineBase::join(): the size of "
                                  "'joining_points' is unexpectedly big");
     }
 
-    s1356(&joining_points[0], joining_points.size() / dim, dim, joining_types, 0, 0, 1, getCurveOrder(), 0,
+    s1356(&joining_points[0], static_cast<int>(joining_points.size() / dims), dim, joining_types, 0, 0, 1, getCurveOrder(), 0,
             &end_par, &raw_intermediate_curve, &gpar, &jnbpar, &ret);
     if (ret != 0)
     {
@@ -874,11 +876,11 @@ double SplineBase::join(SplineBase const& other, double tolerance, bool with_tan
         std::cerr << "start=" << getStartParam() << " end=" << getEndParam() << " singleton=" << isSingleton() << std::endl;
         std::cerr << "other.start=" << other.getStartParam() << " other.end=" << other.getEndParam() << " other.singleton=" << other.isSingleton() << std::endl;
         std::cerr << "points:" << std::endl;
-        for (unsigned int p = 0; p < joining_points.size() / dim; ++p)
+        for (size_t p = 0; p < joining_points.size() / dims; ++p)
         {
             std::cerr << p;
-            for (int i = 0; i < dim; ++i)
-                std::cerr << "  " << joining_points[p * dim + i];
+            for (size_t i = 0; i < dims; ++i)
+                std::cerr << "  " << joining_points[p * dims + i];
             std::cerr << std::endl;
         }
         throw std::runtime_error("cannot generate the intermediate curve");
@@ -950,8 +952,8 @@ vector<double> SplineBase::simplify(double tolerance)
     }
 
     SISLCurve* result = NULL;
-    std::vector<double> epsilon(dimension, tolerance);
-    std::vector<double> maxerr(dimension, 0);
+    std::vector<double> epsilon(static_cast<size_t>(dimension), tolerance);
+    std::vector<double> maxerr(static_cast<size_t>(dimension), 0);
 
     int status;
     s1940(curve, epsilon.data(),
@@ -1059,10 +1061,10 @@ void SplineBase::crop(double start_t, double end_t)
     else if (isSingleton())
         return;
 
-    if (start_t == end_t)
+    if (fabs(start_t - end_t) < 1e-5)
     {
         std::vector<double> point;
-        point.resize(getDimension());
+        point.resize(static_cast<size_t>(getDimension()));
         getPoint(&point[0], start_t);
         setSingleton(&point[0]);
         return;
@@ -1081,7 +1083,7 @@ void SplineBase::setSingleton(double const* coordinates)
     start_param = 0;
     end_param = 0;
     clear();
-    singleton.resize(getDimension());
+    singleton.resize(static_cast<size_t>(getDimension()));
     copy(coordinates, coordinates + getDimension(), &singleton[0]);
 }
 
@@ -1160,7 +1162,7 @@ void SplineBase::derive(unsigned int order, SplineBase& result) const
 
     SISLCurve* newCurve;
     int stat;
-    s1720(const_cast<SISLCurve*>(getSISLCurve()), order, &newCurve, &stat);
+    s1720(const_cast<SISLCurve*>(getSISLCurve()), static_cast<int>(order), &newCurve, &stat);
     if (stat < 0)
         throw std::runtime_error("base::geometry::SplineBase::derive(): failed to derive the curve");
 
